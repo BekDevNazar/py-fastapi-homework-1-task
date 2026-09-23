@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,7 +10,6 @@ router = APIRouter()
 
 @router.get("/movies/", response_model=MovieListResponseSchema)
 async def get_movie_with_pagination(
-        request: Request,
         page: int = Query(1, ge=1),
         per_page: int = Query(10, ge=1, le=20),
         db: AsyncSession = Depends(get_db)
@@ -42,16 +41,13 @@ async def get_movie_with_pagination(
     prev_page = None
     if page > 1:
         prev_page = (
-            f"{request.url.path}"
-            f"?page={page - 1}&per_page={per_page}"
+            f"/theater/movies/?page={page - 1}&per_page={per_page}"
         )
 
     next_page = None
-
     if page < total_pages:
         next_page = (
-            f"{request.url.path}"
-            f"?page={page + 1}&per_page={per_page}"
+            f"/theater/movies/?page={page + 1}&per_page={per_page}"
         )
 
     return {
